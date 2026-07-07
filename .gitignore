@@ -40,3 +40,7 @@ dist-ssr
 # Lovable & Workspace Metadata
 .workspace/
 .lovable/
+
+# Trigger GitHub re-indexing
+
+.vercel
