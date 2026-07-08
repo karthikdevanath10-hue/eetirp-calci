@@ -317,209 +317,191 @@ export function Solver() {
         ))}
       </div>
 
-      {/* Side-by-Side Dashboard Columns */}
-      <div className="grid gap-6 md:grid-cols-12 items-start">
-        {/* LEFT COLUMN: Input Form & Clicking Templates (5 cols) */}
-        <div className="md:col-span-5 space-y-6">
-          {/* Inputs Form */}
-          <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur">
-            <form onSubmit={handleCalculate} className="space-y-4">
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder={`Type your ${activeSubject} question (e.g. choose a template below)...`}
-                rows={5}
-                className="w-full resize-none rounded-xl border border-border bg-input/40 p-4 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-              />
+      {/* Inputs Form */}
+      <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur space-y-4">
+        <form onSubmit={handleCalculate} className="space-y-4">
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder={`Type your ${activeSubject} question (or select a template below)...`}
+            rows={4}
+            className="w-full resize-none rounded-xl border border-border bg-input/40 p-4 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+          />
 
-              {attachedFileName && (
-                <div className="flex items-center gap-3 rounded-lg border border-border bg-input/30 p-2.5">
-                  <div className="h-10 w-10 rounded bg-accent flex items-center justify-center text-xl">
-                    📄
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
-                      {attachedFileName}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">
-                      Text loaded into prompt
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setAttachedFileName(null)}
-                    className="ml-auto text-xs text-destructive hover:underline font-semibold"
-                  >
-                    Clear
-                  </button>
-                </div>
-              )}
-
-              {/* Controls Bar */}
-              <div className="flex flex-wrap items-center gap-2">
-                <label className="cursor-pointer rounded-lg border border-border px-3.5 py-2.5 text-xs font-semibold hover:bg-accent transition select-none">
-                  📁 Load file
-                  <input
-                    type="file"
-                    accept="text/*,.txt,.csv"
-                    className="hidden"
-                    onChange={(e) => handleFileUpload(e.target.files?.[0] ?? null)}
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={recording ? stopRecording : startRecording}
-                  className={`rounded-lg border px-3.5 py-2.5 text-xs font-semibold transition ${
-                    recording
-                      ? "border-destructive bg-destructive/20 text-destructive animate-pulse"
-                      : "border-border hover:bg-accent"
-                  }`}
-                >
-                  {recording ? "⏹ Stop" : "🎙 Dictate"}
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading || !prompt.trim()}
-                  className="ml-auto rounded-lg bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground shadow-md transition hover:brightness-115 active:scale-[0.98] disabled:opacity-50"
-                >
-                  {loading ? "Solving..." : "Solve →"}
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Dynamic Templates Selection Dashboard */}
-          <div className="space-y-3">
-            <h3 className="text-xs uppercase font-bold tracking-wider text-muted-foreground pl-1">
-              Select {activeSubject} templates:
-            </h3>
-            <div className="grid gap-2.5">
+          {/* Template Dropdown Selector */}
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="template-select"
+              className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1"
+            >
+              Select a {activeSubject} question template:
+            </label>
+            <select
+              id="template-select"
+              value=""
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val) {
+                  setPrompt(val);
+                  setError(null);
+                  setSolution(null);
+                }
+              }}
+              className="w-full rounded-xl border border-border bg-input/40 px-3.5 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition cursor-pointer"
+            >
+              <option value="" disabled>
+                -- Choose a template to auto-fill --
+              </option>
               {TEMPLATES[activeSubject]?.map((t, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setPrompt(t.query);
-                    setError(null);
-                    setSolution(null);
-                  }}
-                  className="rounded-xl border border-border bg-card/45 p-3.5 text-left transition hover:border-primary hover:bg-card shadow-sm flex flex-col justify-between"
-                >
-                  <div>
-                    <h4 className="text-xs font-bold text-foreground mb-0.5">{t.name}</h4>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      {t.description}
-                    </p>
-                  </div>
-                  <code className="mt-2 block rounded bg-background px-2.5 py-1.5 text-[9px] font-mono text-primary truncate w-full border border-border/40">
-                    {t.query}
-                  </code>
-                </button>
+                <option key={idx} value={t.query}>
+                  {t.name} ({t.query})
+                </option>
               ))}
-            </div>
+            </select>
           </div>
-        </div>
 
-        {/* RIGHT COLUMN: Output Solution worked steps, loading states, errors (7 cols) */}
-        <div className="md:col-span-7 space-y-6">
-          {/* Error state */}
-          {error && (
-            <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-xs text-destructive font-medium leading-relaxed">
-              ⚠️ {error}
+          {attachedFileName && (
+            <div className="flex items-center gap-3 rounded-lg border border-border bg-input/30 p-2.5">
+              <div className="h-10 w-10 rounded bg-accent flex items-center justify-center text-xl">
+                📄
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-foreground truncate max-w-[250px]">
+                  {attachedFileName}
+                </span>
+                <span className="text-[10px] text-muted-foreground">Text loaded into prompt</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAttachedFileName(null)}
+                className="ml-auto text-xs text-destructive hover:underline font-semibold"
+              >
+                Clear
+              </button>
             </div>
           )}
 
-          {/* Loading state */}
-          {loading && (
-            <div className="flex items-center gap-3.5 rounded-xl border border-border bg-card/60 p-5 shadow-sm">
-              <div className="h-3.5 w-3.5 animate-pulse rounded-full bg-primary" />
-              <span className="text-sm font-medium text-muted-foreground">
-                Resolving equations locally...
+          {/* Controls Bar */}
+          <div className="flex flex-wrap items-center gap-2 pt-2">
+            <label className="cursor-pointer rounded-lg border border-border px-3.5 py-2.5 text-xs font-semibold hover:bg-accent transition select-none">
+              📁 Load file
+              <input
+                type="file"
+                accept="text/*,.txt,.csv"
+                className="hidden"
+                onChange={(e) => handleFileUpload(e.target.files?.[0] ?? null)}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={recording ? stopRecording : startRecording}
+              className={`rounded-lg border px-3.5 py-2.5 text-xs font-semibold transition ${
+                recording
+                  ? "border-destructive bg-destructive/20 text-destructive animate-pulse"
+                  : "border-border hover:bg-accent"
+              }`}
+            >
+              {recording ? "⏹ Stop Dictating" : "🎙 Dictate Question"}
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !prompt.trim()}
+              className="ml-auto rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition hover:brightness-115 active:scale-[0.98] disabled:opacity-50"
+            >
+              {loading ? "Calculating..." : "Solve Question →"}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Solutions / Loading / Errors Section (Vertical Stack) */}
+      <div className="mt-8 space-y-6">
+        {/* Error state */}
+        {error && (
+          <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-xs text-destructive font-medium leading-relaxed">
+            ⚠️ {error}
+          </div>
+        )}
+
+        {/* Loading state */}
+        {loading && (
+          <div className="flex items-center gap-3.5 rounded-xl border border-border bg-card/60 p-5 shadow-sm">
+            <div className="h-3.5 w-3.5 animate-pulse rounded-full bg-primary" />
+            <span className="text-sm font-medium text-muted-foreground">
+              Resolving equations locally...
+            </span>
+          </div>
+        )}
+
+        {/* Output Solution Viewer */}
+        {solution && !loading && (
+          <article className="space-y-5 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between">
+              <span className="mono-num rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-[10px] uppercase font-bold tracking-widest text-primary">
+                {solution.domain}
               </span>
             </div>
-          )}
 
-          {/* Output Solution Viewer */}
-          {solution && !loading && (
-            <article className="space-y-5 animate-in fade-in duration-300">
-              <div className="flex items-center justify-between">
-                <span className="mono-num rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-[10px] uppercase font-bold tracking-widest text-primary">
-                  {solution.domain}
-                </span>
-              </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <InfoBlock title="Given" items={solution.given} />
+              <InfoBlock title="Find" items={solution.find} />
+              <InfoBlock title="Assumptions" items={solution.assumptions} />
+            </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                <InfoBlock title="Given" items={solution.given} />
-                <InfoBlock title="Find" items={solution.find} />
-                <InfoBlock title="Assumptions" items={solution.assumptions} />
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80 pl-1 uppercase tracking-wider text-[11px]">
-                  Worked Solution Steps
-                </h3>
-                <ol className="space-y-3">
-                  {solution.steps.map((s, i) => (
-                    <li
-                      key={i}
-                      className="rounded-xl border border-border bg-card p-4 shadow-sm relative overflow-hidden"
-                      style={{ borderLeft: "4px solid var(--color-primary)" }}
-                    >
-                      <div className="flex items-baseline gap-2">
-                        <span className="mono-num text-[11px] font-bold text-primary">
-                          STEP {i + 1}
-                        </span>
-                        <h4 className="font-semibold text-sm text-foreground">{s.title}</h4>
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground/80 pl-1 uppercase tracking-wider text-[11px]">
+                Worked Solution Steps
+              </h3>
+              <ol className="space-y-3">
+                {solution.steps.map((s, i) => (
+                  <li
+                    key={i}
+                    className="rounded-xl border border-border bg-card p-4 shadow-sm relative overflow-hidden"
+                    style={{ borderLeft: "4px solid var(--color-primary)" }}
+                  >
+                    <div className="flex items-baseline gap-2">
+                      <span className="mono-num text-[11px] font-bold text-primary">
+                        STEP {i + 1}
+                      </span>
+                      <h4 className="font-semibold text-sm text-foreground">{s.title}</h4>
+                    </div>
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                      {s.explanation}
+                    </p>
+                    {s.latex && (
+                      <div className="mt-3 overflow-x-auto rounded-lg bg-background/50 p-3.5 border border-border/60">
+                        <Latex tex={s.latex} block />
                       </div>
-                      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                        {s.explanation}
-                      </p>
-                      {s.latex && (
-                        <div className="mt-3 overflow-x-auto rounded-lg bg-background/50 p-3.5 border border-border/60">
-                          <Latex tex={s.latex} block />
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              </div>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
 
-              <div className="rounded-2xl border border-primary/40 bg-primary/5 p-6 shadow-md">
-                <div className="mono-num mb-1 text-[10px] uppercase font-bold tracking-wider text-primary">
-                  Final Answer
+            <div className="rounded-2xl border border-primary/40 bg-primary/5 p-6 shadow-md">
+              <div className="mono-num mb-1 text-[10px] uppercase font-bold tracking-wider text-primary">
+                Final Answer
+              </div>
+              {solution.final.latex ? (
+                <div className="overflow-x-auto">
+                  <Latex tex={solution.final.latex} block />
                 </div>
-                {solution.final.latex ? (
-                  <div className="overflow-x-auto">
-                    <Latex tex={solution.final.latex} block />
-                  </div>
-                ) : (
-                  <div className="mono-num text-2xl font-bold">
-                    {solution.final.value}{" "}
-                    <span className="text-sm text-primary">{solution.final.unit}</span>
-                  </div>
-                )}
-              </div>
-
-              {solution.notes && (
-                <div className="rounded-xl border border-border bg-card/40 p-4 text-xs text-muted-foreground">
-                  <span className="mr-1.5 font-bold text-foreground">Note:</span>
-                  {solution.notes}
+              ) : (
+                <div className="mono-num text-2xl font-bold">
+                  {solution.final.value}{" "}
+                  <span className="text-sm text-primary">{solution.final.unit}</span>
                 </div>
               )}
-            </article>
-          )}
-
-          {/* Empty Placeholder state */}
-          {!solution && !loading && !error && (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center min-h-[300px] h-full">
-              <div className="text-4xl mb-3">🧮</div>
-              <h3 className="text-sm font-bold text-foreground">No active calculation</h3>
-              <p className="max-w-xs mt-2 text-xs text-muted-foreground leading-relaxed">
-                Type your question or click one of the templates on the left, then click{" "}
-                <b>Solve</b> to see the worked steps here.
-              </p>
             </div>
-          )}
-        </div>
+
+            {solution.notes && (
+              <div className="rounded-xl border border-border bg-card/40 p-4 text-xs text-muted-foreground">
+                <span className="mr-1.5 font-bold text-foreground">Note:</span>
+                {solution.notes}
+              </div>
+            )}
+          </article>
+        )}
       </div>
     </div>
   );
