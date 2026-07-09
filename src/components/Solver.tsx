@@ -5,10 +5,19 @@ import { Latex } from "./Latex";
 
 const SUBJECTS = ["Maths", "Physics", "Electronics", "Electrical", "Mechanical", "Civil"];
 
+interface TemplateVariable {
+  name: string;
+  label: string;
+  placeholder: string;
+  unit?: string;
+}
+
 interface Template {
   name: string;
   query: string;
   description: string;
+  variables: TemplateVariable[];
+  queryFormatter: (vals: Record<string, string>) => string;
 }
 
 const TEMPLATES: Record<string, Template[]> = {
@@ -17,26 +26,64 @@ const TEMPLATES: Record<string, Template[]> = {
       name: "Linear Equation",
       query: "ax + b = c",
       description: "Solves standard ax + b = c equations.",
+      variables: [
+        { name: "a", label: "Coefficient a", placeholder: "3" },
+        { name: "b", label: "Constant b", placeholder: "5" },
+        { name: "c", label: "Result c", placeholder: "20" },
+      ],
+      queryFormatter: (v) => `${v.a}x + ${v.b} = ${v.c}`,
     },
     {
       name: "Quadratic Equation",
       query: "ax^2 + bx + c = 0",
       description: "Calculates real and complex roots, discriminant, and vertex coordinates.",
+      variables: [
+        { name: "a", label: "Coefficient a", placeholder: "1" },
+        { name: "b", label: "Coefficient b", placeholder: "-5" },
+        { name: "c", label: "Constant c", placeholder: "6" },
+      ],
+      queryFormatter: (v) => `${v.a}x^2 + ${v.b}x + ${v.c} = 0`,
     },
     {
       name: "System of 2 Equations",
       query: "a1x + b1y = c1 and a2x + b2y = c2",
       description: "Solves two linear equations using Cramer's determinant rule.",
+      variables: [
+        { name: "a1", label: "a1", placeholder: "2" },
+        { name: "b1", label: "b1", placeholder: "3" },
+        { name: "c1", label: "c1", placeholder: "12" },
+        { name: "a2", label: "a2", placeholder: "1" },
+        { name: "b2", label: "b2", placeholder: "-1" },
+        { name: "c2", label: "c2", placeholder: "1" },
+      ],
+      queryFormatter: (v) => `${v.a1}x + ${v.b1}y = ${v.c1} and ${v.a2}x + ${v.b2}y = ${v.c2}`,
     },
     {
       name: "Matrix 2x2 Determinant",
       query: "matrix determinant: [[a, b], [c, d]]",
       description: "Calculates the determinant of a 2x2 matrix step-by-step.",
+      variables: [
+        { name: "a", label: "a (row 1, col 1)", placeholder: "3" },
+        { name: "b", label: "b (row 1, col 2)", placeholder: "5" },
+        { name: "c", label: "c (row 2, col 1)", placeholder: "2" },
+        { name: "d", label: "d (row 2, col 2)", placeholder: "8" },
+      ],
+      queryFormatter: (v) => `matrix determinant: [[${v.a}, ${v.b}], [${v.c}, ${v.d}]]`,
     },
     {
       name: "Vector Cross Product",
       query: "vector cross product: u = [u1, u2, u3], v = [v1, v2, v3]",
       description: "Computes the 3D cross product vector components.",
+      variables: [
+        { name: "u1", label: "u1", placeholder: "2" },
+        { name: "u2", label: "u2", placeholder: "3" },
+        { name: "u3", label: "u3", placeholder: "4" },
+        { name: "v1", label: "v1", placeholder: "5" },
+        { name: "v2", label: "v2", placeholder: "6" },
+        { name: "v3", label: "v3", placeholder: "7" },
+      ],
+      queryFormatter: (v) =>
+        `vector cross product: u = [${v.u1}, ${v.u2}, ${v.u3}], v = [${v.v1}, ${v.v2}, ${v.v3}]`,
     },
   ],
   Physics: [
@@ -44,21 +91,46 @@ const TEMPLATES: Record<string, Template[]> = {
       name: "Projectile Motion",
       query: "projectile motion: velocity = v, angle = theta",
       description: "Solves flight time, horizontal range, and peak height.",
+      variables: [
+        { name: "v", label: "Launch velocity (v)", placeholder: "25", unit: "m/s" },
+        { name: "theta", label: "Launch angle (θ)", placeholder: "40", unit: "deg" },
+      ],
+      queryFormatter: (v) => `projectile motion: velocity = ${v.v}, angle = ${v.theta}`,
     },
     {
       name: "Kinematics (SUVAT)",
       query: "kinematics: initial velocity = u, acceleration = a, time = t",
       description: "Calculates displacement, final velocity, and time variables.",
+      variables: [
+        { name: "u", label: "Initial velocity (u)", placeholder: "0", unit: "m/s" },
+        { name: "a", label: "Acceleration (a)", placeholder: "3", unit: "m/s²" },
+        { name: "t", label: "Time duration (t)", placeholder: "8", unit: "s" },
+      ],
+      queryFormatter: (v) =>
+        `kinematics: initial velocity = ${v.u}, acceleration = ${v.a}, time = ${v.t}`,
     },
     {
       name: "Dynamics: Force & Friction",
       query: "friction force: mass = m, acceleration = a, friction coefficient = mu",
       description: "Calculates normal force, friction, and total driving force Fn, Ff, F.",
+      variables: [
+        { name: "m", label: "Mass (m)", placeholder: "50", unit: "kg" },
+        { name: "a", label: "Acceleration (a)", placeholder: "2", unit: "m/s²" },
+        { name: "mu", label: "Friction coeff (μ)", placeholder: "0.3" },
+      ],
+      queryFormatter: (v) =>
+        `friction force: mass = ${v.m}, acceleration = ${v.a}, friction coefficient = ${v.mu}`,
     },
     {
       name: "Centripetal Force",
       query: "centripetal force: mass = m, velocity = v, radius = r",
       description: "Calculates centripetal acceleration and inward force Fc.",
+      variables: [
+        { name: "m", label: "Mass (m)", placeholder: "2.5", unit: "kg" },
+        { name: "v", label: "Tangential speed (v)", placeholder: "12", unit: "m/s" },
+        { name: "r", label: "Orbit radius (r)", placeholder: "4", unit: "m" },
+      ],
+      queryFormatter: (v) => `centripetal force: mass = ${v.m}, velocity = ${v.v}, radius = ${v.r}`,
     },
   ],
   Electronics: [
@@ -66,16 +138,34 @@ const TEMPLATES: Record<string, Template[]> = {
       name: "Ohm's Law",
       query: "ohm's law: current = i, resistance = r",
       description: "Solves for the missing parameter (V, I, or R) given any two inputs.",
+      variables: [
+        { name: "i", label: "Current (I)", placeholder: "2", unit: "A" },
+        { name: "r", label: "Resistance (R)", placeholder: "10", unit: "Ω" },
+      ],
+      queryFormatter: (v) => `ohm's law: current = ${v.i}, resistance = ${v.r}`,
     },
     {
       name: "Resistor Network",
       query: "parallel resistors: r1, r2, r3",
       description: "Calculates the total equivalent resistance for series or parallel connections.",
+      variables: [
+        { name: "r1", label: "Resistor 1 (R1)", placeholder: "100", unit: "Ω" },
+        { name: "r2", label: "Resistor 2 (R2)", placeholder: "220", unit: "Ω" },
+        { name: "r3", label: "Resistor 3 (R3)", placeholder: "470", unit: "Ω" },
+      ],
+      queryFormatter: (v) => `parallel resistors: ${v.r1}, ${v.r2}, ${v.r3}`,
     },
     {
       name: "Voltage Divider Circuit",
       query: "voltage divider: input voltage = vin, resistor 1 = r1, resistor 2 = r2",
       description: "Calculates output voltage across R2 in series divider networks.",
+      variables: [
+        { name: "vin", label: "Input voltage (Vin)", placeholder: "12", unit: "V" },
+        { name: "r1", label: "Resistor 1 (R1)", placeholder: "1000", unit: "Ω" },
+        { name: "r2", label: "Resistor 2 (R2)", placeholder: "2200", unit: "Ω" },
+      ],
+      queryFormatter: (v) =>
+        `voltage divider: input voltage = ${v.vin}, resistor 1 = ${v.r1}, resistor 2 = ${v.r2}`,
     },
   ],
   Electrical: [
@@ -83,11 +173,26 @@ const TEMPLATES: Record<string, Template[]> = {
       name: "RLC AC Impedance",
       query: "RLC circuit: resistance = r, inductance = l, capacitance = c, frequency = f",
       description: "Computes inductive/capacitive reactances, total impedance, and phase angle.",
+      variables: [
+        { name: "r", label: "Resistance (R)", placeholder: "100", unit: "Ω" },
+        { name: "l", label: "Inductance (L)", placeholder: "50", unit: "mH" },
+        { name: "c", label: "Capacitance (C)", placeholder: "10", unit: "μF" },
+        { name: "f", label: "Frequency (f)", placeholder: "500", unit: "Hz" },
+      ],
+      queryFormatter: (v) =>
+        `RLC circuit: resistance = ${v.r}, inductance = ${v.l}, capacitance = ${v.c}, frequency = ${v.f}`,
     },
     {
       name: "Transformer Turns Ratio",
       query: "transformer: primary voltage = vp, primary turns = np, secondary turns = ns",
       description: "Calculates turns step factor and secondary output voltage Vs.",
+      variables: [
+        { name: "vp", label: "Primary Voltage (Vp)", placeholder: "240", unit: "V" },
+        { name: "np", label: "Primary winding turns (Np)", placeholder: "400" },
+        { name: "ns", label: "Secondary winding turns (Ns)", placeholder: "20" },
+      ],
+      queryFormatter: (v) =>
+        `transformer: primary voltage = ${v.vp}, primary turns = ${v.np}, secondary turns = ${v.ns}`,
     },
   ],
   Mechanical: [
@@ -95,22 +200,48 @@ const TEMPLATES: Record<string, Template[]> = {
       name: "Beam Bending",
       query: "beam: length = l, load = p",
       description: "Solves support reactions, max bending moment, and maximum shear force.",
+      variables: [
+        { name: "l", label: "Beam length (L)", placeholder: "6", unit: "m" },
+        { name: "p", label: "Concentrated point load (P)", placeholder: "10", unit: "kN" },
+      ],
+      queryFormatter: (v) => `beam: length = ${v.l}, load = ${v.p}`,
     },
     {
       name: "Heat Conduction",
       query:
         "heat conduction: conductivity = k, area = a, thickness = d, inside = t1, outside = t2",
       description: "Calculates steady-state 1D heat flow rate through a material boundary.",
+      variables: [
+        { name: "k", label: "Thermal conductivity (k)", placeholder: "0.8", unit: "W/m·K" },
+        { name: "a", label: "Surface area (A)", placeholder: "15", unit: "m²" },
+        { name: "d", label: "Thickness (d)", placeholder: "10", unit: "cm" },
+        { name: "t1", label: "Inner temperature (T1)", placeholder: "22", unit: "°C" },
+        { name: "t2", label: "Outer temperature (T2)", placeholder: "4", unit: "°C" },
+      ],
+      queryFormatter: (v) =>
+        `heat conduction: conductivity = ${v.k}, area = ${v.a}, thickness = ${v.d}, inside = ${v.t1}, outside = ${v.t2}`,
     },
     {
       name: "Hydrostatic Fluid Pressure",
       query: "fluid pressure: density = rho, height = h",
       description: "Calculates hydrostatic pressure at depth h in Pascals and kPa.",
+      variables: [
+        { name: "rho", label: "Fluid density (ρ)", placeholder: "1000", unit: "kg/m³" },
+        { name: "h", label: "Fluid depth height (h)", placeholder: "15", unit: "m" },
+      ],
+      queryFormatter: (v) => `fluid pressure: density = ${v.rho}, height = ${v.h}`,
     },
     {
       name: "Gear Speed Ratio",
       query: "gear speed: driver teeth = t1, driven teeth = t2, driver speed = n1",
       description: "Calculates gear transmission ratio and driven output speed N2.",
+      variables: [
+        { name: "t1", label: "Driver teeth (T1)", placeholder: "12" },
+        { name: "t2", label: "Driven teeth (T2)", placeholder: "36" },
+        { name: "n1", label: "Driver speed (N1)", placeholder: "1800", unit: "RPM" },
+      ],
+      queryFormatter: (v) =>
+        `gear speed: driver teeth = ${v.t1}, driven teeth = ${v.t2}, driver speed = ${v.n1}`,
     },
   ],
   Civil: [
@@ -119,17 +250,37 @@ const TEMPLATES: Record<string, Template[]> = {
       query: "earth pressure: wall height = h, weight = gamma, friction = phi",
       description:
         "Solves Rankine's lateral soil thrust pressure coefficient and resultant forces.",
+      variables: [
+        { name: "h", label: "Wall retaining height (H)", placeholder: "5", unit: "m" },
+        { name: "gamma", label: "Soil unit weight (γ)", placeholder: "18", unit: "kN/m³" },
+        { name: "phi", label: "Friction internal angle (φ)", placeholder: "30", unit: "deg" },
+      ],
+      queryFormatter: (v) =>
+        `earth pressure: wall height = ${v.h}, weight = ${v.gamma}, friction = ${v.phi}`,
     },
     {
       name: "Concrete spec Compressive Strength",
       query: "concrete strength: load = p, diameter = d",
       description:
         "Calculates cross-sectional area and compressive strength of specimen cylinders.",
+      variables: [
+        { name: "p", label: "Failure point load (P)", placeholder: "530", unit: "kN" },
+        { name: "d", label: "Specimen diameter (D)", placeholder: "150", unit: "mm" },
+      ],
+      queryFormatter: (v) => `concrete strength: load = ${v.p}, diameter = ${v.d}`,
     },
     {
       name: "Euler Column Buckling",
       query: "column buckling: elastic modulus = e, moment of inertia = i, length = l, factor = k",
       description: "Calculates effective column length and critical buckling load Pcr.",
+      variables: [
+        { name: "e", label: "Elastic Modulus (E)", placeholder: "200", unit: "GPa" },
+        { name: "i", label: "Inertia Area Moment (I)", placeholder: "8000", unit: "cm⁴" },
+        { name: "l", label: "Column height length (L)", placeholder: "4", unit: "m" },
+        { name: "k", label: "Effective factor (K)", placeholder: "0.7" },
+      ],
+      queryFormatter: (v) =>
+        `column buckling: elastic modulus = ${v.e}, moment of inertia = ${v.i}, length = ${v.l}, factor = ${v.k}`,
     },
   ],
 };
@@ -143,6 +294,8 @@ export function Solver() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [templateValues, setTemplateValues] = useState<Record<string, string>>({});
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
 
@@ -212,15 +365,26 @@ export function Solver() {
     setSolution(null);
     setLoading(true);
 
+    let queryToSolve = prompt;
+    if (selectedTemplate) {
+      const missing = selectedTemplate.variables.filter((v) => !templateValues[v.name]?.trim());
+      if (missing.length > 0) {
+        setError(`Please fill in all parameter values (${missing.map((m) => m.name).join(", ")})`);
+        setLoading(false);
+        return;
+      }
+      queryToSolve = selectedTemplate.queryFormatter(templateValues);
+    }
+
     // Dynamic timeout to simulate resolving
     setTimeout(() => {
       try {
-        const sol = parseAndSolve(activeSubject, prompt);
+        const sol = parseAndSolve(activeSubject, queryToSolve);
         if (sol) {
           setSolution(sol);
         } else {
           setError(
-            `Question format not recognized. Please review and type using one of the templates listed below for ${activeSubject}.`,
+            `Question format not recognized. Please review and check the input parameters for ${activeSubject}.`,
           );
         }
       } catch (err) {
@@ -319,14 +483,6 @@ export function Solver() {
       {/* Inputs Form */}
       <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur space-y-4">
         <form onSubmit={handleCalculate} className="space-y-4">
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder={`Type your ${activeSubject} question (or select a template below)...`}
-            rows={4}
-            className="w-full resize-none rounded-xl border border-border bg-input/40 p-4 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-
           {/* Template Dropdown Selector */}
           <div className="flex flex-col gap-1.5">
             <label
@@ -337,24 +493,24 @@ export function Solver() {
             </label>
             <select
               id="template-select"
-              value=""
+              value={selectedTemplate?.name || ""}
               onChange={(e) => {
                 const val = e.target.value;
-                if (val) {
-                  setPrompt(val);
-                  setError(null);
-                  setSolution(null);
-                }
+                const found = TEMPLATES[activeSubject]?.find((t) => t.name === val) || null;
+                setSelectedTemplate(found);
+                setTemplateValues({});
+                setError(null);
+                setSolution(null);
               }}
               className="w-full rounded-xl border border-border bg-card px-3.5 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition cursor-pointer dark:bg-[#131b2e]"
             >
-              <option value="" disabled className="bg-card text-foreground dark:bg-[#131b2e]">
-                -- Choose a template to auto-fill --
+              <option value="" className="bg-card text-foreground dark:bg-[#131b2e]">
+                -- Write free-form question (type below) --
               </option>
               {TEMPLATES[activeSubject]?.map((t, idx) => (
                 <option
                   key={idx}
-                  value={t.query}
+                  value={t.name}
                   className="bg-card text-foreground dark:bg-[#131b2e]"
                 >
                   {t.name} ({t.query})
@@ -362,6 +518,72 @@ export function Solver() {
               ))}
             </select>
           </div>
+
+          {selectedTemplate ? (
+            <div className="space-y-4 rounded-xl border border-border bg-input/20 p-4">
+              <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">
+                    Template: {selectedTemplate.name}
+                  </span>
+                  <div className="text-xs font-mono text-muted-foreground mt-0.5">
+                    Structure: {selectedTemplate.query}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedTemplate(null);
+                    setTemplateValues({});
+                    setPrompt("");
+                  }}
+                  className="text-xs text-destructive hover:underline font-semibold"
+                >
+                  ✕ Clear / Free-form
+                </button>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {selectedTemplate.variables.map((v) => (
+                  <div key={v.name} className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <span>{v.label}</span>
+                      <span className="mono-num text-[10px] text-muted-foreground font-bold">
+                        ({v.name} =)
+                      </span>
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={templateValues[v.name] || ""}
+                        onChange={(e) => {
+                          setTemplateValues((prev) => ({
+                            ...prev,
+                            [v.name]: e.target.value,
+                          }));
+                        }}
+                        placeholder={`e.g. ${v.placeholder}`}
+                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
+                      />
+                      {v.unit && (
+                        <span className="text-xs text-muted-foreground font-semibold min-w-[35px]">
+                          {v.unit}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder={`Type your ${activeSubject} question (or select a template above)...`}
+              rows={4}
+              className="w-full resize-none rounded-xl border border-border bg-input/40 p-4 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+          )}
 
           {attachedFileName && (
             <div className="flex items-center gap-3 rounded-lg border border-border bg-input/30 p-2.5">
