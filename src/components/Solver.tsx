@@ -347,13 +347,17 @@ export function Solver() {
                   setSolution(null);
                 }
               }}
-              className="w-full rounded-xl border border-border bg-input/40 px-3.5 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition cursor-pointer"
+              className="w-full rounded-xl border border-border bg-card px-3.5 py-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition cursor-pointer dark:bg-[#131b2e]"
             >
-              <option value="" disabled>
+              <option value="" disabled className="bg-card text-foreground dark:bg-[#131b2e]">
                 -- Choose a template to auto-fill --
               </option>
               {TEMPLATES[activeSubject]?.map((t, idx) => (
-                <option key={idx} value={t.query}>
+                <option
+                  key={idx}
+                  value={t.query}
+                  className="bg-card text-foreground dark:bg-[#131b2e]"
+                >
                   {t.name} ({t.query})
                 </option>
               ))}
