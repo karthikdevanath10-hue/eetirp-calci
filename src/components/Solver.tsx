@@ -15,121 +15,120 @@ const TEMPLATES: Record<string, Template[]> = {
   Maths: [
     {
       name: "Linear Equation",
-      query: "3x + 5 = 20",
+      query: "ax + b = c",
       description: "Solves standard ax + b = c equations.",
     },
     {
       name: "Quadratic Equation",
-      query: "x^2 - 5x + 6 = 0",
+      query: "ax^2 + bx + c = 0",
       description: "Calculates real and complex roots, discriminant, and vertex coordinates.",
     },
     {
       name: "System of 2 Equations",
-      query: "2x + 3y = 12 and x - y = 1",
+      query: "a1x + b1y = c1 and a2x + b2y = c2",
       description: "Solves two linear equations using Cramer's determinant rule.",
     },
     {
       name: "Matrix 2x2 Determinant",
-      query: "matrix determinant: [[3, 5], [2, 8]]",
+      query: "matrix determinant: [[a, b], [c, d]]",
       description: "Calculates the determinant of a 2x2 matrix step-by-step.",
     },
     {
       name: "Vector Cross Product",
-      query: "vector cross product: u = [2, 3, 4], v = [5, 6, 7]",
+      query: "vector cross product: u = [u1, u2, u3], v = [v1, v2, v3]",
       description: "Computes the 3D cross product vector components.",
     },
   ],
   Physics: [
     {
       name: "Projectile Motion",
-      query: "projectile motion: velocity = 25, angle = 40",
+      query: "projectile motion: velocity = v, angle = theta",
       description: "Solves flight time, horizontal range, and peak height.",
     },
     {
       name: "Kinematics (SUVAT)",
-      query: "kinematics: initial velocity = 0, acceleration = 3, time = 8",
+      query: "kinematics: initial velocity = u, acceleration = a, time = t",
       description: "Calculates displacement, final velocity, and time variables.",
     },
     {
       name: "Dynamics: Force & Friction",
-      query: "friction force: mass = 50, acceleration = 2, friction coefficient = 0.3",
+      query: "friction force: mass = m, acceleration = a, friction coefficient = mu",
       description: "Calculates normal force, friction, and total driving force Fn, Ff, F.",
     },
     {
       name: "Centripetal Force",
-      query: "centripetal force: mass = 2.5, velocity = 12, radius = 4",
+      query: "centripetal force: mass = m, velocity = v, radius = r",
       description: "Calculates centripetal acceleration and inward force Fc.",
     },
   ],
   Electronics: [
     {
       name: "Ohm's Law",
-      query: "ohm's law: current = 2, resistance = 10",
+      query: "ohm's law: current = i, resistance = r",
       description: "Solves for the missing parameter (V, I, or R) given any two inputs.",
     },
     {
       name: "Resistor Network",
-      query: "parallel resistors: 100, 220, 470",
+      query: "parallel resistors: r1, r2, r3",
       description: "Calculates the total equivalent resistance for series or parallel connections.",
     },
     {
       name: "Voltage Divider Circuit",
-      query: "voltage divider: input voltage = 12, resistor 1 = 1000, resistor 2 = 2200",
+      query: "voltage divider: input voltage = vin, resistor 1 = r1, resistor 2 = r2",
       description: "Calculates output voltage across R2 in series divider networks.",
     },
   ],
   Electrical: [
     {
       name: "RLC AC Impedance",
-      query: "RLC circuit: resistance = 100, inductance = 50, capacitance = 10, frequency = 500",
+      query: "RLC circuit: resistance = r, inductance = l, capacitance = c, frequency = f",
       description: "Computes inductive/capacitive reactances, total impedance, and phase angle.",
     },
     {
       name: "Transformer Turns Ratio",
-      query: "transformer: primary voltage = 240, primary turns = 400, secondary turns = 20",
+      query: "transformer: primary voltage = vp, primary turns = np, secondary turns = ns",
       description: "Calculates turns step factor and secondary output voltage Vs.",
     },
   ],
   Mechanical: [
     {
       name: "Beam Bending",
-      query: "beam: length = 6, load = 10",
+      query: "beam: length = l, load = p",
       description: "Solves support reactions, max bending moment, and maximum shear force.",
     },
     {
       name: "Heat Conduction",
       query:
-        "heat conduction: conductivity = 0.8, area = 15, thickness = 10, inside = 22, outside = 4",
+        "heat conduction: conductivity = k, area = a, thickness = d, inside = t1, outside = t2",
       description: "Calculates steady-state 1D heat flow rate through a material boundary.",
     },
     {
       name: "Hydrostatic Fluid Pressure",
-      query: "fluid pressure: density = 1000, height = 15",
+      query: "fluid pressure: density = rho, height = h",
       description: "Calculates hydrostatic pressure at depth h in Pascals and kPa.",
     },
     {
       name: "Gear Speed Ratio",
-      query: "gear speed: driver teeth = 12, driven teeth = 36, driver speed = 1800",
+      query: "gear speed: driver teeth = t1, driven teeth = t2, driver speed = n1",
       description: "Calculates gear transmission ratio and driven output speed N2.",
     },
   ],
   Civil: [
     {
       name: "Active Earth Pressure",
-      query: "earth pressure: wall height = 5, weight = 18, friction = 30",
+      query: "earth pressure: wall height = h, weight = gamma, friction = phi",
       description:
         "Solves Rankine's lateral soil thrust pressure coefficient and resultant forces.",
     },
     {
       name: "Concrete spec Compressive Strength",
-      query: "concrete strength: load = 530, diameter = 150",
+      query: "concrete strength: load = p, diameter = d",
       description:
         "Calculates cross-sectional area and compressive strength of specimen cylinders.",
     },
     {
       name: "Euler Column Buckling",
-      query:
-        "column buckling: elastic modulus = 200, moment of inertia = 8000, length = 4, factor = 0.7",
+      query: "column buckling: elastic modulus = e, moment of inertia = i, length = l, factor = k",
       description: "Calculates effective column length and critical buckling load Pcr.",
     },
   ],
